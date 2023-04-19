@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mapper.StartSearchRateStatisticsMapper">
+    <resultMap type="com.ruoyi.domain.StartSearchRateStatistics" id="StartSearchRateStatisticsResult">
+        <id property="id" column="ID"/>
+        <result property="regionName" column="REGION_NAME"/>
+        <result property="statisticsDate" column="STATISTICS_DATE"/>
+        <result property="startName" column="START_NAME"/>
+        <result property="searchCount" column="SEARCH_COUNT"/>
+        <result property="type" column="TYPE"/>
+    </resultMap>
+
+    <sql id="selectsSql">
+        select STATISTICS_DATE,REGION_NAME,START_NAME,SEARCH_COUNT,TYPE
+    </sql>
+
+    <select id="getStartSearchRateStatisticsByDay" resultMap="StartSearchRateStatisticsResult">
+        <include refid="selectsSql"></include>
+        from START_SEARCH_RATE_STATISTICS WHERE TO_DAYS( NOW())-TO_DAYS( STATISTICS_DATE) = 1
+    </select>
+
+    <select id="getStartSearchRateStatisticsBySevenDay" resultMap="StartSearchRateStatisticsResult">
+        <include refid="selectsSql"></include>
+        from START_SEARCH_RATE_STATISTICS WHERE STATISTICS_DATE between  add_days (now(), -7)  and now()
+    </select>
+
+    <select id="getStartSearchRateStatisticsByMonth" resultMap="StartSearchRateStatisticsResult">
+        <include refid="selectsSql"></include>
+        from START_SEARCH_RATE_STATISTICS  WHERE DATE_FORMAT(STATISTICS_DATE, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
+    </select>
+
+    <select id="getStartSearchRateStatisticsByYear" resultMap="StartSearchRateStatisticsResult">
+        <include refid="selectsSql"></include>
+        from START_SEARCH_RATE_STATISTICS  WHERE DATE_FORMAT(STATISTICS_DATE, '%Y') = DATE_FORMAT(CURDATE(), '%Y')
+    </select>
+</mapper>

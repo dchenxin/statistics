@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mapper.BusinessStatisticsMapper">
+
+    <resultMap type="com.ruoyi.domain.BusinessStatistics" id="BusinessStatisticsResult">
+        <id property="id" column="ID"/>
+        <result property="regionName" column="REGION_NAME"/>
+        <result property="statisticsDate" column="STATISTICS_DATE"/>
+        <result property="bookNum" column="BOOK_NUM"/>
+        <result property="cancelNum" column="CANCEL_NUM"/>
+        <result property="cancelAmount" column="CANCEL_AMOUNT"/>
+        <result property="revokeNum" column="REVOKE_NUM"/>
+        <result property="successAmount" column="SUCCESS_AMOUNT"/>
+        <result property="type" column="TYPE"/>
+    </resultMap>
+
+    <sql id="selectsSql">
+        select STATISTICS_DATE,REGION_NAME,BOOK_NUM,CANCEL_NUM,CANCEL_AMOUNT,REVOKE_NUM,SUCCESS_AMOUNT,TYPE
+    </sql>
+
+    <select id="getBusinessStatisticsByDay" resultMap="BusinessStatisticsResult">
+        <include refid="selectsSql"></include>
+        from BUSINESS_STATISTICS WHERE TO_DAYS( NOW())-TO_DAYS( STATISTICS_DATE) = 1
+    </select>
+
+    <select id="getBusinessStatisticsBySevenDay" resultMap="BusinessStatisticsResult">
+        <include refid="selectsSql"></include>
+        from BUSINESS_STATISTICS WHERE STATISTICS_DATE between  add_days (now(), -7)  and now()
+    </select>
+
+    <select id="getBusinessStatisticsByMonth" resultMap="BusinessStatisticsResult">
+        <include refid="selectsSql"></include>
+        from BUSINESS_STATISTICS  WHERE DATE_FORMAT(STATISTICS_DATE, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
+    </select>
+
+    <select id="getBusinessStatisticsByYear" resultMap="BusinessStatisticsResult">
+        <include refid="selectsSql"></include>
+        from BUSINESS_STATISTICS  WHERE DATE_FORMAT(STATISTICS_DATE, '%Y') = DATE_FORMAT(CURDATE(), '%Y')
+    </select>
+</mapper>

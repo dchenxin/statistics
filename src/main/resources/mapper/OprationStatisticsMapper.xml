@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mapper.OprationStatisticsMapper">
+
+    <resultMap type="com.ruoyi.domain.OprationStatistics" id="OprationStatisticsResult">
+        <id property="id" column="ID"/>
+        <result property="statisticsDate" column="STATISTICS_DATE"/>
+        <result property="tradeAmount" column="TRADE_AMOUNT"/>
+        <result property="tradeCount" column="TRADE_COUNT"/>
+        <result property="tradeNum" column="TRADE_NUM"/>
+        <result property="tradeNumFirst" column="TRADE_NUM_FIRST"/>
+        <result property="type" column="TYPE"/>
+    </resultMap>
+
+    <sql id="selectsSql">
+        select STATISTICS_DATE,TRADE_AMOUNT,TRADE_COUNT,TRADE_NUM,TRADE_NUM_FIRST,TYPE
+    </sql>
+
+    <select id="getOprationStatisticsByDay" resultMap="OprationStatisticsResult">
+        <include refid="selectsSql"></include>
+        from OPRATION_STATISTICS WHERE TO_DAYS( NOW())-TO_DAYS( STATISTICS_DATE) = 1
+        order by STATISTICS_DATE
+    </select>
+
+    <select id="getOprationStatisticsBySevenDay" resultMap="OprationStatisticsResult">
+        <include refid="selectsSql"></include>
+        from OPRATION_STATISTICS WHERE STATISTICS_DATE between  add_days (now(), -7)  and now()
+        order by STATISTICS_DATE
+    </select>
+
+    <select id="getOprationStatisticsByMonth" resultMap="OprationStatisticsResult">
+        <include refid="selectsSql"></include>
+        from OPRATION_STATISTICS  WHERE DATE_FORMAT(STATISTICS_DATE, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
+        order by STATISTICS_DATE
+    </select>
+
+    <select id="getOprationStatisticsByYear" resultMap="OprationStatisticsResult">
+        select to_char(STATISTICS_DATE,'yyyy-mm') STATISTICS_DATE,
+         sum(trade_amount) TRADE_AMOUNT,
+         sum(TRADE_COUNT) TRADE_COUNT,
+         sum(TRADE_NUM) TRADE_NUM,
+         sum(TRADE_NUM_FIRST) TRADE_NUM_FIRST
+         from opration_statistics
+        WHERE STATISTICS_DATE between add_months(now(),-1*12) and now()
+        group by to_char(STATISTICS_DATE,'yyyy-mm');
+    </select>
+
+</mapper>

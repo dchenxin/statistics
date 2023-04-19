@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mapper.BuyEarlyStatisticsMapper">
+    <resultMap type="com.ruoyi.domain.BuyEarlyStatistics" id="BuyEarlyStatisticsResult">
+        <id property="id" column="ID"/>
+        <result property="regionName" column="REGION_NAME"/>
+        <result property="statisticsDate" column="STATISTICS_DATE"/>
+        <result property="earlyOneHour" column="EARLY_ONE_HOUR"/>
+        <result property="earlyEight" column="EARLY_EIGHT"/>
+        <result property="earlySixteen" column="EARLY_SIXTEEN"/>
+        <result property="earlyOneDay" column="EARLY_ONE_DAY"/>
+        <result property="earlyTwoDay" column="EARLY_TWO_DAY"/>
+        <result property="earlyTwoDayOver" column="EARLY_TWO_DAY_OVER"/>
+        <result property="lineName" column="LINE_NAME"/>
+        <result property="type" column="TYPE"/>
+    </resultMap>
+
+
+    <sql id="selectsSql">
+        select STATISTICS_DATE,REGION_NAME,EARLY_ONE_HOUR,EARLY_EIGHT,EARLY_SIXTEEN,EARLY_ONE_DAY,EARLY_TWO_DAY,EARLY_TWO_DAY_OVER,TYPE,LINE_NAME
+    </sql>
+
+    <select id="getBuyEarlyStatisticsByDay" resultMap="BuyEarlyStatisticsResult">
+        <include refid="selectsSql"></include>
+        from BUY_EARLY_STATISTICS
+        Where TO_DAYS( NOW())-TO_DAYS( STATISTICS_DATE) = 1
+    </select>
+
+    <select id="getBuyEarlyStatisticsBySevenDay" resultMap="BuyEarlyStatisticsResult">
+        <include refid="selectsSql"></include>
+        from BUY_EARLY_STATISTICS WHERE STATISTICS_DATE between  add_days (now(), -7)  and now()
+    </select>
+
+    <select id="getBuyEarlyStatisticsByMonth" resultMap="BuyEarlyStatisticsResult">
+        <include refid="selectsSql"></include>
+        from BUY_EARLY_STATISTICS  WHERE DATE_FORMAT(STATISTICS_DATE, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
+    </select>
+
+    <select id="getBuyEarlyStatisticsByYear" resultMap="BuyEarlyStatisticsResult">
+        <include refid="selectsSql"></include>
+        from BUY_EARLY_STATISTICS  WHERE DATE_FORMAT(STATISTICS_DATE, '%Y') = DATE_FORMAT(CURDATE(), '%Y')
+    </select>
+</mapper>
